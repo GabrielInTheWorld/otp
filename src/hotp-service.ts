@@ -1,16 +1,16 @@
-// import * as base32 from 'base32';
 import crypto from 'crypto';
+import { Base32 } from 'base-coding';
 
-import { Digits } from './utils';
+import { addLeadingZeros, Digits } from './utils';
 
 export class Hotp {
   public create(secret: string, counter: number, digits: Digits = 6): string {
     if (this.isBase32(secret)) {
-      // secret = base32.decode(secret);
+      secret = Base32.decode(secret);
     }
     const hmacResult = this.createHmac(secret, counter);
     let hotp = this.truncate(hmacResult, digits);
-    hotp = this.addLeadingZeros(hotp, digits);
+    hotp = addLeadingZeros(hotp, digits);
     return hotp;
   }
 
@@ -42,14 +42,6 @@ export class Hotp {
       (parseInt(hmacResult.substr(offset + 6, 2), 16) & 0xff);
     const hotp = binCode % Math.pow(10, digits);
     return `${hotp}`;
-  }
-
-  protected addLeadingZeros(numberAsString: string, expectedLength: number): string {
-    let result = numberAsString;
-    while (result.length < expectedLength) {
-      result = `0${result}`;
-    }
-    return result;
   }
 
   protected createArray(length: number, defaultValue: number = 0): number[] {
