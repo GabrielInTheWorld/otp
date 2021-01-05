@@ -11,4 +11,17 @@ export class Totp {
     const timeSteps = Math.floor((t1 - t0) / 30);
     return this.hotp.create(secret, timeSteps, digits);
   }
+
+  public verify(code: string, secret: string, t1: number, t0: number = 0): boolean {
+    if (code.length < 6 || code.length > 8) {
+      throw new Error('Undefined length of code.');
+    }
+    const comparisons = [
+      this.create(secret, t1, t0, code.length as Digits),
+      this.create(secret, t1 + 30, t0, code.length as Digits),
+      this.create(secret, t1 + 60, t0, code.length as Digits),
+      this.create(secret, t1 + 89, t0, code.length as Digits)
+    ];
+    return comparisons.some(comparison => comparison === code);
+  }
 }

@@ -21,11 +21,6 @@ test('Totp T 1234567890', () => {
 });
 
 test('Totp base32 secret', () => {
-  const totp = FakeUtils.createTotp(1608712290, 'JBSWY3DPEBLW64TMMQ', 0, 6);
-  const totp2 = FakeUtils.createTotp(1608712320, 'JBSWY3DPEBLW64TMMQ', 0, 6);
-  const totp3 = FakeUtils.createTotp(1608712350, 'JBSWY3DPEBLW64TMMQ', 0, 6);
-  console.log('totp', totp);
-  console.log('totp2', totp2);
-  console.log('totp3', totp3);
-  expect(totp).toBe('0');
+  const isCorrect = FakeUtils.verifyTotp('875110', 1608712290, 'JBSWY3DPEBLW64TMMQ');
+  expect(isCorrect).toBe(true);
 });

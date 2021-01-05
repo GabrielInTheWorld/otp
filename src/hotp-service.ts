@@ -1,17 +1,28 @@
 import crypto from 'crypto';
 import { Base32 } from 'base-coding';
 
-import { addLeadingZeros, Digits } from './utils';
+import { addLeadingZeros, convertNumberIntoBytes, Digits, isBase32 } from './utils';
 
 export class Hotp {
   public create(secret: string, counter: number, digits: Digits = 6): string {
-    if (this.isBase32(secret)) {
+    if (isBase32(secret)) {
       secret = Base32.decode(secret);
+    }
+    if (secret.length < 160) {
+      console.warn('RFC4226 recommends, that the length of a secret is at least 160 bits.');
     }
     const hmacResult = this.createHmac(secret, counter);
     let hotp = this.truncate(hmacResult, digits);
     hotp = addLeadingZeros(hotp, digits);
     return hotp;
+  }
+
+  public verify(code: string, secret: string, counter: number): boolean {
+    if (code.length < 6 || code.length > 8) {
+      throw new Error('Undefined length of code.');
+    }
+    const comparison = this.create(secret, counter, code.length as Digits);
+    return code === comparison;
   }
 
   protected createHmac(secret: string, counter: number | string): string {
@@ -20,17 +31,8 @@ export class Hotp {
     }
     return crypto
       .createHmac('sha1', secret)
-      .update(Buffer.from(this.convertNumberToBytes(counter)))
+      .update(Buffer.from(convertNumberIntoBytes(counter)))
       .digest('hex');
-  }
-
-  protected convertNumberToBytes(toConvert: number): number[] {
-    const bytes: number[] = this.createArray(8);
-    for (let i = bytes.length - 1; i >= 0; --i) {
-      bytes[i] = toConvert & 0xff;
-      toConvert >>= 8;
-    }
-    return bytes;
   }
 
   protected truncate(hmacResult: string, digits: Digits = 6): string {
@@ -42,18 +44,5 @@ export class Hotp {
       (parseInt(hmacResult.substr(offset + 6, 2), 16) & 0xff);
     const hotp = binCode % Math.pow(10, digits);
     return `${hotp}`;
-  }
-
-  protected createArray(length: number, defaultValue: number = 0): number[] {
-    const result: number[] = [];
-    for (let i = 0; i < length; ++i) {
-      result.push(defaultValue);
-    }
-    return result;
-  }
-
-  protected isBase32(input: string): boolean {
-    const regex = /^[A-Z0-7]+=*$/g;
-    return regex.test(input);
   }
 }
