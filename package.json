@@ -1,6 +1,6 @@
 {
-  "name": "otp",
-  "version": "1.0.0",
+  "name": "final-otp",
+  "version": "1.0.1",
   "description": "Implementation of HOTP and TOTP",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

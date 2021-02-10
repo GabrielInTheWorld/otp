@@ -30,4 +30,12 @@ function addLeadingZeros(numberAsString: string, expectedLength: number): string
   return result;
 }
 
-export { Digits, addLeadingZeros, isBase32, createArray, convertNumberIntoBytes };
+function addTrailingZerosByModulo(numberAsString: string, expectedLength: number): string {
+  let result = numberAsString;
+  while (result.length % expectedLength !== 0) {
+    result = `${result}0`;
+  }
+  return result;
+}
+
+export { Digits, addLeadingZeros, addTrailingZerosByModulo, isBase32, createArray, convertNumberIntoBytes };

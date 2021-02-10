@@ -23,7 +23,7 @@ export namespace FakeUtils {
     return hotp.fakeTruncate(hmacResult);
   }
 
-  export function createTotp(t1: number, secret: string = defaultSecret, t0: number = 0, digits: Digits = 8): string {
+  export function createTotp(t1?: number, secret: string = defaultSecret, t0: number = 0, digits: Digits = 8): string {
     return totp.create(secret, t1, t0, digits);
   }
 

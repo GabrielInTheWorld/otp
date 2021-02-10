@@ -24,3 +24,31 @@ test('Totp base32 secret', () => {
   const isCorrect = FakeUtils.verifyTotp('875110', 1608712290, 'JBSWY3DPEBLW64TMMQ');
   expect(isCorrect).toBe(true);
 });
+
+test('Totp verify T + 0', () => {
+  const t1 = Math.round(new Date().getTime() / 1000);
+  const totp = FakeUtils.createTotp(t1);
+  const isCorrect = FakeUtils.verifyTotp(totp, t1);
+  expect(isCorrect).toBe(true);
+});
+
+test('Totp verify T + 30', () => {
+  const t1 = Math.round(new Date().getTime() / 1000);
+  const totp = FakeUtils.createTotp(t1 + 30);
+  const isCorrect = FakeUtils.verifyTotp(totp, t1);
+  expect(isCorrect).toBe(true);
+});
+
+test('Totp verify T + 60', () => {
+  const t1 = Math.round(new Date().getTime() / 1000);
+  const totp = FakeUtils.createTotp(t1 + 60);
+  const isCorrect = FakeUtils.verifyTotp(totp, t1);
+  expect(isCorrect).toBe(true);
+});
+
+test('Totp verify T + 90', () => {
+  const t1 = Math.round(new Date().getTime() / 1000);
+  const totp = FakeUtils.createTotp(t1 + 90);
+  const isCorrect = FakeUtils.verifyTotp(totp, t1);
+  expect(isCorrect).toBe(false);
+});
