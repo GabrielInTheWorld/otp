@@ -8,6 +8,10 @@ export class Hotp {
     if (isBase32(secret)) {
       secret = Base32.decode(secret);
     }
+    if (!secret) {
+      console.warn('No secret provided to generate an hotp.\n\r\n\rReturn.');
+      return '';
+    }
     if (secret.length < 160) {
       console.warn('RFC4226 recommends, that the length of a secret is at least 160 bits.');
     }
