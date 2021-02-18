@@ -1,38 +1,43 @@
-import crypto from 'crypto';
 import { Base32 } from 'base-coding';
+import crypto from 'crypto';
 
-import { addLeadingZeros, convertNumberIntoBytes, Digits, isBase32 } from './utils';
+import { Digits, isBase32, addLeadingZeros, convertNumberIntoBytes } from '../utils';
+import { Hotp } from '../models/hotp';
 
-/**
- * @deprecated
- */
-export class Hotp {
-  public create(secret: string, counter: number, digits: Digits = 6): string {
+interface Args {
+  digits?: Digits;
+  expiresIn?: number;
+}
+
+export namespace HotpService {
+  export function create(secret: string, counter: number, args?: Args): Hotp | undefined {
+    const digits = args && args.digits ? args.digits : 6;
+    const expiresIn = args?.expiresIn;
     if (isBase32(secret)) {
       secret = Base32.decode(secret);
     }
     if (!secret) {
       console.warn('No secret provided to generate an hotp.\n\r\n\rReturn.');
-      return '';
+      return;
     }
     if (secret.length < 160) {
       console.warn('RFC4226 recommends, that the length of a secret is at least 160 bits.');
     }
-    const hmacResult = this.createHmac(secret, counter);
-    let hotp = this.truncate(hmacResult, digits);
+    const hmacResult = createHmac(secret, counter);
+    let hotp = truncate(hmacResult, digits);
     hotp = addLeadingZeros(hotp, digits);
-    return hotp;
+    return new Hotp({ counter, secret, value: hotp, expiresIn, verifyFn: verify });
   }
 
-  public verify(code: string, secret: string, counter: number): boolean {
+  export function verify(code: string, secret: string, counter: number): boolean {
     if (code.length < 6 || code.length > 8) {
       throw new Error('Undefined length of code.');
     }
-    const comparison = this.create(secret, counter, code.length as Digits);
-    return code === comparison;
+    const comparison = create(secret, counter, { digits: code.length as Digits });
+    return comparison ? code === comparison.value : false;
   }
 
-  protected createHmac(secret: string, counter: number | string): string {
+  function createHmac(secret: string, counter: number | string): string {
     if (typeof counter === 'string') {
       counter = parseInt(counter, 10);
     }
@@ -42,7 +47,7 @@ export class Hotp {
       .digest('hex');
   }
 
-  protected truncate(hmacResult: string, digits: Digits = 6): string {
+  function truncate(hmacResult: string, digits: Digits = 6): string {
     const offset = (parseInt(hmacResult.slice(-2), 16) & 0xf) * 2;
     const binCode =
       ((parseInt(hmacResult.substr(offset, 2), 16) & 0x7f) << 24) |

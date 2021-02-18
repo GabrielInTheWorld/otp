@@ -1,5 +1,5 @@
-import { Hotp } from './hotp-service';
-import { Totp } from './totp-service';
 import { Digits } from './utils';
+import { HotpService, TotpService } from './services';
+import { Hotp, Totp } from './models';
 
-export { Hotp, Digits, Totp };
+export { Hotp, Digits, Totp, HotpService, TotpService };

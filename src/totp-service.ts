@@ -1,6 +1,9 @@
 import { Hotp } from './hotp-service';
 import { Digits } from './utils';
 
+/**
+ * @deprecated
+ */
 export class Totp {
   private hotp = new Hotp();
 

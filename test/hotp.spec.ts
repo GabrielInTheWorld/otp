@@ -1,4 +1,5 @@
 import { FakeUtils } from './utils';
+import { FakeHotpService } from './utils/fake-hotp-service';
 
 test('Truncate method', () => {
   const hmac = '1f8698690e02ca16618550ef7f19da8e945b555a';
@@ -32,26 +33,51 @@ test('Hmac Counter 4', () => {
 });
 
 test('HOTP Counter 0', () => {
-  const hotp = FakeUtils.createHotp(0);
-  expect(hotp).toBe('755224');
+  const hotp = FakeHotpService.create(0);
+  expect(hotp.value).toBe('755224');
+});
+
+test('Verify: HOTP Counter 0', () => {
+  const hotp = FakeHotpService.create(0);
+  expect(hotp.verify('755224')).toBe(true);
 });
 
 test('HOTP Counter 1', () => {
-  const hotp = FakeUtils.createHotp(1);
-  expect(hotp).toBe('287082');
+  const hotp = FakeHotpService.create(1);
+  expect(hotp.value).toBe('287082');
+});
+
+test('Verify: HOTP Counter 1', () => {
+  const hotp = FakeHotpService.create(1);
+  expect(hotp.verify('287082')).toBe(true);
 });
 
 test('HOTP Counter 2', () => {
-  const hotp = FakeUtils.createHotp(2);
-  expect(hotp).toBe('359152');
+  const hotp = FakeHotpService.create(2);
+  expect(hotp.value).toBe('359152');
+});
+
+test('Verify: HOTP Counter 2', () => {
+  const hotp = FakeHotpService.create(2);
+  expect(hotp.verify('359152')).toBe(true);
 });
 
 test('HOTP Counter 3', () => {
-  const hotp = FakeUtils.createHotp(3);
-  expect(hotp).toBe('969429');
+  const hotp = FakeHotpService.create(3);
+  expect(hotp.value).toBe('969429');
+});
+
+test('Verify: HOTP Counter 3', () => {
+  const hotp = FakeHotpService.create(3);
+  expect(hotp.verify('969429')).toBe(true);
 });
 
 test('HOTP Counter 4', () => {
-  const hotp = FakeUtils.createHotp(4);
-  expect(hotp).toBe('338314');
+  const hotp = FakeHotpService.create(4);
+  expect(hotp.value).toBe('338314');
+});
+
+test('Verify: HOTP Counter 4', () => {
+  const hotp = FakeHotpService.create(4);
+  expect(hotp.verify('338314')).toBe(true);
 });
